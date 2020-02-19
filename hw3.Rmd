@@ -1,0 +1,70 @@
+---
+title: "hw3"
+author: "Matthew Coulibaly"
+date: "2/16/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+data(tips, package = "reshape2")
+str(tips)
+numParty = 244
+numParty
+
+str(tips)
+# There are 4 factor variables which are sex, smoker, day, and time. There are two numeric variables which are total_bill and tip. The only integer variable in the dataset is size.
+
+thur = sum(tips[tips$day == "Thur", ]$tip)
+fri = sum(tips[tips$day == "Fri", ]$tip)
+sat = sum(tips[tips$day == "Sat", ]$tip)
+sun = sum(tips[tips$day == "Sun", ]$tip)
+day = c(thur, fri, sat, sun)
+day
+
+takeout = tips$sex != "Male" & tips$size >= 5
+female5 = tips[takeout, ]
+female5
+
+library(ggplot2)
+ggplot(data = tips, aes(x = tip, y = total_bill)) + geom_point()
+# There is a moderate positive correlation between the price of the total bill and the tip given.
+
+
+# There are a handfull of outliers in this dataset. For instance, there are a few people who dont tip more than three dollars even though their food costed upward of $30. There are also some outliers because there were customers who tipped more than $7.5 while the majority tipped between $0 and $5.5. In conclusion, there is a moderate positive correlation between tips and total bil. But there are some otliers because people tip small amounts even though their bill was expensive and others had expensive food and tipped accordingly.
+
+
+tips$tiprate = tips$tip / tips$total_bill
+summary(tips$tiprate)
+#The average tiprate in this data set is 16.08 percent. This means that on average, everybody tips 16 percent of the total cost of their food at this restaurant.
+
+lunch = tips[tips$time == "Lunch", ]$tiprate
+dinner = tips[tips$time == "Dinner", ]$tiprate
+df2 = data.frame(tip_rate = c(dinner, lunch), time_of_day =  c("Dinner", "Lunch"))
+ggplot(df2, aes(time_of_day, tip_rate)) + geom_boxplot(alpha = 0) +
+    geom_jitter(alpha = 0.3)
+# The lunch tips and dinner tips were similar because their means, medians, and IQR's were nearly identical. However, lunch had a smaller range because there were not as many tip outliers as there were during dinner.In conclusion, the tiprate did not vary much from lunch to dinner except that there's are more outlier tips during dinner.
+
+smokers = tips[tips$smoker == "Yes", ]
+smokerstip = smokers$tip / smokers$total_bill
+nonsmokers = tips[tips$smoker == "No", ]
+nonsmokerstip = nonsmokers$tip / nonsmokers$total_bill
+male = tips[tips$sex == "Male", ]
+maletip = male$tip / male$total_bill
+female = tips[tips$sex == "Female", ]
+femaletip = female$tip / female$total_bill
+df = data.frame(avgerage_tips=c(mean(smokerstip), mean(nonsmokerstip), mean(maletip), mean(femaletip)), types_of_customers = c("Smoker", "nonsmoker", "males", "females"))
+ggplot(df, aes(types_of_customers, avgerage_tips)) + geom_bar(stat = "identity") + geom_text(aes(label = avgerage_tips), vjust=1.6, color="white", size=2.5)+
+  theme_minimal()
+# on average, females tip more than males by about one percent and smokers tip more than nonsmokers by about half a percent.According to this data, you can see that a female smoker would give a slightly more generous tip than a nonsmoking male.
+
+
+ggplot(data = tips, mapping = aes(x = day, y = total_bill, color = sex)) +
+    geom_boxplot(alpha = 0) +
+    geom_jitter(alpha = 0.3)
+# Looking at the boxplot below, it is evident that the males usually pay because the blue dots outnumber the red dots. This is especially clear while looking at saturday and sunday. Thursday and friday are more evenly distributed in terms of who pays because it doesnn't look like one color outnunbers the other.In conclusion, males pay the bill much more that females on saturday and sunday but it seems to be evenly distributed on thursday and friday.
+```
+
